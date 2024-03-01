@@ -17,7 +17,10 @@ typedef struct s_rules
 	int		tt_sleep;
 	int		nbr_eat;
 	int		time_start;
-	pthread_mutex_t time_look;
+	int		died;
+	pthread_mutex_t time_lock;
+	pthread_mutex_t print_lock;
+	pthread_mutex_t died_lock;
 	pthread_mutex_t *forks;
 	struct s_philo *philo;
 }			t_rules;
@@ -25,6 +28,7 @@ typedef struct s_rules
 typedef struct s_philo
 {
 	int		id;
+	int		time_last_eat;
 	pthread_mutex_t *left_fork;
 	pthread_mutex_t *right_fork;
 	t_rules	*rules;
