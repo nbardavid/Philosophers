@@ -6,7 +6,7 @@
 /*   By: nbardavi <nbabardavid@gmail.com>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/05 09:25:57 by nbardavi          #+#    #+#             */
-/*   Updated: 2024/03/06 14:21:42 by nbardavi         ###   ########.fr       */
+/*   Updated: 2024/03/06 15:27:03 by nbardavi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,6 +17,14 @@ void exit_thread(t_rules rules)
 	printf("Error creating threads\n");
 	free_rules(&rules);
 	exit(EXIT_FAILURE);
+}
+
+void solo_life(t_rules rules)
+{
+	rules.time_start = get_time();
+	printf("[🍴] %d 1 has taken a fork \n", get_time() - rules.time_start);
+	usleep(rules.tt_die * 1000);
+	printf("[💀] %d 1 died\n", get_time() - rules.time_start);
 }
 
 void life(t_rules rules)
@@ -54,6 +62,9 @@ int main(int argc, char **argv)
 
 	set_rules(&rules, argc, argv);
 	set_philo(&rules);
-	life(rules);
+	if (rules.nbr > 1)
+		life(rules);
+	else
+		solo_life(rules);
 	free_rules(&rules);
 }

@@ -6,7 +6,7 @@
 /*   By: nbardavi <nbabardavid@gmail.com>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/06 11:48:17 by nbardavi          #+#    #+#             */
-/*   Updated: 2024/03/06 14:21:43 by nbardavi         ###   ########.fr       */
+/*   Updated: 2024/03/06 15:06:52 by nbardavi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -104,8 +104,11 @@ void set_philo(t_rules *rules)
 		}
 		i++;
 	}
-	temp = rules->philo[rules->nbr - 1].left_fork;
-	rules->philo[rules->nbr - 1].left_fork = rules->philo[rules->nbr - 1].right_fork;
-	rules->philo[rules->nbr - 1].right_fork = temp;
-	rules->philo[0].left_fork = &rules->forks[i - 1];
+	if (rules->nbr > 1)
+	{
+		temp = rules->philo[rules->nbr - 1].left_fork;
+		rules->philo[rules->nbr - 1].left_fork = rules->philo[rules->nbr - 1].right_fork;
+		rules->philo[rules->nbr - 1].right_fork = temp;
+		rules->philo[0].left_fork = &rules->forks[i - 1];
+	}
 }
