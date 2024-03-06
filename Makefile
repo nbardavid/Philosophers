@@ -4,7 +4,13 @@ CFLAGS = -Wall -Wextra -Werror -g
 LDFLAGS = -pthread
 SRCS = source/main.c \
        source/ft_atoi.c \
-       source/ft_calloc.c
+       source/ft_calloc.c \
+	   source/init.c \
+	   source/routine.c \
+	   source/utils.c \
+	   source/eating.c \
+	   source/dead_check.c
+
 OBJS = $(SRCS:source/%.c=object/%.o)
 OBJDEST = object
 
