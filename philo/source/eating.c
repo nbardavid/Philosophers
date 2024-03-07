@@ -12,7 +12,7 @@
 
 #include "../include/philo.h"
 
-int		check_dead_fork(t_philo *philo)
+int	check_dead_fork(t_philo *philo)
 {
 	pthread_mutex_lock(&philo->rules->died_lock);
 	if (philo->rules->died == 1)
@@ -21,7 +21,7 @@ int		check_dead_fork(t_philo *philo)
 	return (0);
 }
 
-int get_left_fork(t_philo *philo)
+int	get_left_fork(t_philo *philo)
 {
 	if (check_dead_fork(philo) == 1)
 	{
@@ -31,14 +31,15 @@ int get_left_fork(t_philo *philo)
 	pthread_mutex_lock(philo->left_fork);
 	pthread_mutex_lock(&philo->rules->print_lock);
 	if (check_dead_fork(philo) == 0)
-		printf("[🍴] %d %d has taken a fork\n", get_time() - philo->rules->time_start, philo->id);
+		printf("[🍴] %d %d has taken a fork\n", get_time()
+			- philo->rules->time_start, philo->id);
 	else
 		pthread_mutex_unlock(&philo->rules->died_lock);
 	pthread_mutex_unlock(&philo->rules->print_lock);
 	return (0);
 }
 
-int get_right_fork(t_philo *philo)
+int	get_right_fork(t_philo *philo)
 {
 	if (check_dead_fork(philo) == 1)
 	{
@@ -50,15 +51,17 @@ int get_right_fork(t_philo *philo)
 	pthread_mutex_lock(&philo->rules->print_lock);
 	if (check_dead_fork(philo) == 0)
 	{
-		printf("[🍴] %d %d has taken a fork \n", get_time() - philo->rules->time_start, philo->id);
-		printf("[🍔] %d %d is eating\n", get_time() - philo->rules->time_start, philo->id);
+		printf("[🍴] %d %d has taken a fork \n", get_time()
+			- philo->rules->time_start, philo->id);
+		printf("[🍔] %d %d is eating\n", get_time() - philo->rules->time_start,
+			philo->id);
 	}
 	else
 		pthread_mutex_unlock(&philo->rules->died_lock);
 	return (0);
 }
 
-void eat(t_philo *philo)
+void	eat(t_philo *philo)
 {
 	pthread_mutex_lock(&philo->eat_lock);
 	philo->nbr_eat++;
@@ -77,7 +80,6 @@ void	eating(t_philo *philo)
 		return ;
 	if (get_right_fork(philo) == 1)
 		return ;
-
 	pthread_mutex_unlock(&philo->rules->print_lock);
 	eat(philo);
 }

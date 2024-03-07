@@ -12,23 +12,25 @@
 
 #include "../include/philo.h"
 
-void	thinking(t_philo	*philo)
+void	thinking(t_philo *philo)
 {
 	pthread_mutex_lock(&philo->rules->print_lock);
-	printf("[💭] %d %d is thinking\n", get_time() - philo->rules->time_start, philo->id);
+	printf("[💭] %d %d is thinking\n", get_time() - philo->rules->time_start,
+		philo->id);
 	pthread_mutex_unlock(&philo->rules->print_lock);
 	ft_sleep(philo->rules->tt_think, philo);
 }
 
-void	sleeping(t_philo	*philo)
+void	sleeping(t_philo *philo)
 {
 	pthread_mutex_lock(&philo->rules->print_lock);
-	printf("[💤] %d %d is sleeping\n", get_time() - philo->rules->time_start, philo->id);
+	printf("[💤] %d %d is sleeping\n", get_time() - philo->rules->time_start,
+		philo->id);
 	pthread_mutex_unlock(&philo->rules->print_lock);
 	ft_sleep(philo->rules->tt_sleep, philo);
 }
 
-int		check_dead(t_philo *philo, int *trigger)
+int	check_dead(t_philo *philo, int *trigger)
 {
 	pthread_mutex_lock(&philo->rules->died_lock);
 	if (philo->rules->died == 1)
@@ -42,25 +44,25 @@ int		check_dead(t_philo *philo, int *trigger)
 
 void	*routine(void *philo_ptr)
 {
-	t_philo *philo;
+	t_philo	*philo;
 	int		trigger;
 
 	trigger = 0;
 	philo = philo_ptr;
-	while(1)
+	while (1)
 	{
 		eating(philo);
 		if (check_dead(philo, &trigger) == 1)
-			break;
+			break ;
 		sleeping(philo);
 		if (check_dead(philo, &trigger) == 1)
-			break;
+			break ;
 		if (philo->rules->tt_think > 0)
 			thinking(philo);
 		if (check_dead(philo, &trigger) == 1)
-			break;
+			break ;
 	}
 	if (trigger == 1)
 		pthread_mutex_unlock(&philo->rules->died_lock);
-	return(NULL);
+	return (NULL);
 }

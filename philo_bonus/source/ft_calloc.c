@@ -1,41 +1,34 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_atoi.c                                          :+:      :+:    :+:   */
+/*   ft_calloc.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: nbardavi <nbabardavid@gmail.com>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/02/29 11:13:04 by nbardavi          #+#    #+#             */
-/*   Updated: 2024/03/06 13:48:44 by nbardavi         ###   ########.fr       */
+/*   Created: 2024/02/29 14:42:09 by nbardavi          #+#    #+#             */
+/*   Updated: 2024/02/29 14:42:29 by nbardavi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../include/philo.h"
 
-int	ft_atoi(char *str)
+void	*ft_calloc(size_t nmemb, size_t size)
 {
-	unsigned long	nbr;
-	int	i;
-	int sign;
+	void	*returnvalue;
 
-	sign = 1;
-	i = 0;
-	nbr = 0;
-	if (!str)
-		return (0);
-	if (str[0] == '-')
+	if (size == 0)
 	{
-		i++;
-		sign = -1;
+		returnvalue = malloc(0);
+		return (returnvalue);
 	}
-	else if (str[0] == '+')
-		i++;
-	while(str[i] && str[i] >= '0' && str[i] <= '9')
-	{
-		nbr *= 10;
-		nbr += str[i++] - '0';
-	}
-	if (str[i] != '\0')
-		return (0);
-	return(nbr * sign);
+	if (nmemb <= 0 && size <= 0)
+		return (NULL);
+	if (nmemb > SIZE_MAX / size)
+		return (NULL);
+	returnvalue = malloc(nmemb * size);
+	if (returnvalue == NULL || (!nmemb && !size))
+		return (NULL);
+	if (returnvalue)
+		memset(returnvalue, 0, nmemb * size);
+	return (returnvalue);
 }

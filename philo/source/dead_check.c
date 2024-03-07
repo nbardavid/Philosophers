@@ -6,7 +6,7 @@
 /*   By: nbardavi <nbabardavid@gmail.com>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/06 12:27:40 by nbardavi          #+#    #+#             */
-/*   Updated: 2024/03/06 13:55:11 by nbardavi         ###   ########.fr       */
+/*   Updated: 2024/03/07 09:34:44 by nbardavi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,21 +15,23 @@
 int	is_dead(t_philo *philo)
 {
 	int	t;
+
 	t = 0;
 	pthread_mutex_lock(&philo->eat_lock);
-	if ((get_time() - philo->time_last_eat) > philo->rules->tt_die) // peut etre <=
+	if ((get_time() - philo->time_last_eat) > philo->rules->tt_die)
 	{
 		pthread_mutex_lock(&philo->rules->print_lock);
 		pthread_mutex_lock(&philo->rules->died_lock);
 		philo->rules->died = 1;
-		printf("[💀] %d %d died\n", get_time() - philo->rules->time_start, philo->id);
+		printf("[💀] %d %d died\n", get_time() - philo->rules->time_start,
+			philo->id);
 		pthread_mutex_unlock(&philo->rules->died_lock);
 		pthread_mutex_unlock(&philo->rules->print_lock);
 	}
 	pthread_mutex_unlock(&philo->eat_lock);
 	if (philo->rules->died == 1)
 		t = 1;
-	return(t);
+	return (t);
 }
 
 int	eat_all_print(t_rules *rules)
@@ -37,7 +39,8 @@ int	eat_all_print(t_rules *rules)
 	pthread_mutex_lock(&rules->died_lock);
 	rules->died = 1;
 	pthread_mutex_unlock(&rules->died_lock);
-	printf("[🍔] %d All the philosophers are satisfied\n", get_time() - rules->time_start);
+	printf("[🍔] %d All the philosophers are satisfied\n", get_time()
+		- rules->time_start);
 	return (0);
 }
 
@@ -49,32 +52,31 @@ void	eat_all_checker(t_rules *rules, int i, int *trigger)
 	pthread_mutex_unlock(&rules->philo[i].eat_lock);
 }
 
-void	*checker(void	*rules_ptr)
+void	*checker(void *rules_ptr)
 {
-	t_rules *rules;
+	t_rules	*rules;
 	int		i;
-	int trigger;
+	int		trigger;
 
 	i = 0;
 	rules = rules_ptr;
-	while(1)
+	while (1)
 	{
 		trigger = 0;
-		while(i < rules->nbr)
+		while (i < rules->nbr)
 		{
 			is_dead(&rules->philo[i]);
 			eat_all_checker(rules, i, &trigger);
 			if (rules->died == 1)
-				break;
+				break ;
 			i++;
 		}
 		if (rules->died == 1)
-			break;
+			break ;
 		if (trigger == 0 && eat_all_print(rules) == 0)
-			break;
+			break ;
 		usleep(100);
 		i = 0;
 	}
-	return(NULL);
+	return (NULL);
 }
-
