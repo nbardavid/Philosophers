@@ -6,7 +6,7 @@
 /*   By: nbardavi <nbabardavid@gmail.com>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/06 13:51:42 by nbardavi          #+#    #+#             */
-/*   Updated: 2024/03/07 15:49:01 by nbardavi         ###   ########.fr       */
+/*   Updated: 2024/03/08 15:33:54 by nbardavi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,8 +21,11 @@
 #include <sys/time.h>
 #include <limits.h>
 #include <semaphore.h>
+#include <fcntl.h>
+#include <sys/wait.h>
 
 # define SIZE_MAX (18446744073709551615UL)
+# define EXIT_DEAD 10
 
 typedef struct s_rules
 {
@@ -34,6 +37,7 @@ typedef struct s_rules
 	int		nbr_eat;
 	int		time_start;
 	int		died;
+	int		*id;
 	sem_t	*print_lock;
 	sem_t	*forks;
 	struct s_philo *philo;

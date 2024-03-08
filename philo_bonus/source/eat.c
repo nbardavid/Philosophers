@@ -6,7 +6,7 @@
 /*   By: nbardavi <nbabardavid@gmail.com>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/07 12:13:31 by nbardavi          #+#    #+#             */
-/*   Updated: 2024/03/07 15:47:39 by nbardavi         ###   ########.fr       */
+/*   Updated: 2024/03/08 15:49:51 by nbardavi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,15 +27,13 @@
 void get_left_fork(t_philo *philo)
 {
 	sem_wait(philo->rules->forks);
-	printf("[🍴] %d %d has taken a fork\n", get_time()
-		- philo->rules->time_start, philo->id);
+	printf("[🍴] %d %d has taken a fork\n", get_time() - philo->rules->time_start, philo->id);
 }
 
 void get_right_fork(t_philo *philo)
 {
 	sem_wait(philo->rules->forks);
-	printf("[🍴] %d %d has taken a fork\n", get_time()
-		- philo->rules->time_start, philo->id);
+	printf("[🍴] %d %d has taken a fork\n", get_time() - philo->rules->time_start, philo->id);
 }
 
 void eating (t_philo *philo)
@@ -50,7 +48,6 @@ void eating (t_philo *philo)
 void eat(t_philo *philo)
 {
 	get_left_fork(philo);
-	write(1, "ddsa", 4);
 	get_right_fork(philo);
 	eating(philo);
 }
