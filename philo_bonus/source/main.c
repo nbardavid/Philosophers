@@ -6,7 +6,7 @@
 /*   By: nbardavi <nbabardavid@gmail.com>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/07 10:19:19 by nbardavi          #+#    #+#             */
-/*   Updated: 2024/03/08 15:51:59 by nbardavi         ###   ########.fr       */
+/*   Updated: 2024/03/08 21:05:51 by nbardavi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,6 +36,8 @@ void init_sem(t_rules *rules)
 {
 	rules->forks = sem_open("/forks", O_CREAT, 0644, rules->nbr);
 	rules->print_lock = sem_open("/print", O_CREAT, 0644, 1);
+	sem_unlink("/forks");
+	sem_unlink("/print");
 }
 
 int	check_dead(t_philo *philo)
@@ -53,6 +55,12 @@ void suicide(t_philo *philo)
 	exit(EXIT_DEAD);
 }
 
+void	sleeping(t_philo *philo)
+{
+	printf("[💤] %d %d is sleeping\n", get_time() - philo->rules->time_start, philo->id);
+	ft_sleep(philo->rules->tt_sleep);
+}
+
 void routine(t_philo *philo)
 {
 	int i;
@@ -63,7 +71,9 @@ void routine(t_philo *philo)
 		eat(philo);
 		if (check_dead(philo) == 1)
 			suicide(philo);
-		// sleep(philo);
+		sleeping(philo);
+		if (check_dead(philo) == 1)
+			suicide(philo);
 		// thinking(philo);
 		i++;
 	}
@@ -107,6 +117,7 @@ void life(t_rules *rules)
 	rules->time_start = get_time();
 	while(i < rules->nbr)
 	{
+		rules->philo[i].time_last_eat = get_time();
 		rules->philo[i].id = i;
 		if (pthread_create(&threads[i], NULL, bigbrother, (void *)&rules->philo[i]) != 0)
 		{
@@ -131,9 +142,7 @@ void life(t_rules *rules)
 void clean(t_rules *rules)
 {
 	sem_close(rules->forks);
-	sem_unlink("/forks");
-	rules->print_lock = sem_open("/print", O_CREAT, 0644, 1);
-	sem_unlink("/print");
+	sem_close(rules->print_lock);
 }
 
 int	main(int argc, char **argv)

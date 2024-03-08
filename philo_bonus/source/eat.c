@@ -6,7 +6,7 @@
 /*   By: nbardavi <nbabardavid@gmail.com>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/07 12:13:31 by nbardavi          #+#    #+#             */
-/*   Updated: 2024/03/08 15:49:51 by nbardavi         ###   ########.fr       */
+/*   Updated: 2024/03/08 20:18:33 by nbardavi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,6 +41,7 @@ void eating (t_philo *philo)
 	printf("[🍔] %d %d is eating\n", get_time() - philo->rules->time_start,
 		philo->id);
 	ft_sleep(philo->rules->tt_eat);
+	philo->time_last_eat = get_time();
 	sem_post(philo->rules->forks);
 	sem_post(philo->rules->forks);
 }
