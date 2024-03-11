@@ -6,7 +6,7 @@
 /*   By: nbardavi <nbabardavid@gmail.com>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/06 13:51:42 by nbardavi          #+#    #+#             */
-/*   Updated: 2024/03/08 15:33:54 by nbardavi         ###   ########.fr       */
+/*   Updated: 2024/03/11 01:08:03 by nbardavi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,6 +38,7 @@ typedef struct s_rules
 	int		time_start;
 	int		died;
 	int		*id;
+	sem_t	*dead_lock;
 	sem_t	*print_lock;
 	sem_t	*forks;
 	struct s_philo *philo;
@@ -65,7 +66,7 @@ void	init_sem(t_rules *rules);
 /*_.-=-._.-=-._.-=-._.-=-._.- INIT -._.-=-._.-=-._.-=-._.-=-._.-=-._*/
 
 void	set_rules(t_rules *rules, int argc, char **argv);
-void	ft_sleep(int ms);
+void	ft_sleep(int ms, t_philo *philo);
 
 /*_.-=-._.-=-._.-=-._.-=-._.-=-._.-=-._.-=-._.-=-._.-=-._.-=-._.-=-._*/
 /*_.-=-._.-=-._.-=-._.-=-._.- ROUTINE -._.-=-._.-=-._.-=-._.-=-._.-=-._*/

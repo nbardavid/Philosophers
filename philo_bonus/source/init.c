@@ -6,7 +6,7 @@
 /*   By: nbardavi <nbabardavid@gmail.com>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/06 11:48:17 by nbardavi          #+#    #+#             */
-/*   Updated: 2024/03/08 15:27:19 by nbardavi         ###   ########.fr       */
+/*   Updated: 2024/03/11 04:57:16 by nbardavi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,8 +33,33 @@ void	check_argc(int argc)
 	}
 }
 
+void numerical_argument(char *str)
+{
+	int i;
+
+	i = 0;
+	while (str[i])
+	{
+		if (str[i] < '0' || str[i] > '9')
+		{
+			fd_putstr(2, "Only numerical arguments\n");
+			exit(EXIT_FAILURE);
+		}
+		i++;
+	}
+}
+
+void numerical_check(char **argv)
+{
+	numerical_argument(argv[1]);
+	numerical_argument(argv[2]);
+	numerical_argument(argv[3]);
+	numerical_argument(argv[4]);
+}
+
 void	check_args(t_rules *rules, int argc, char **argv)
 {
+	numerical_check(argv);
 	rules->nbr = ft_atoi(argv[1]);
 	rules->tt_die = ft_atoi(argv[2]);
 	rules->tt_eat = ft_atoi(argv[3]);
@@ -42,7 +67,10 @@ void	check_args(t_rules *rules, int argc, char **argv)
 	rules->tt_think = ft_abs(rules->tt_eat - rules->tt_sleep);
 	rules->died = 0;
 	if (argc == 6)
+	{
+		numerical_argument(argv[5]);
 		rules->nbr_eat = ft_atoi(argv[5]);
+	}
 	else
 		rules->nbr_eat = INT_MAX;
 	if (rules->nbr < 0 || rules->tt_sleep < 0 || rules->tt_eat < 0
