@@ -6,7 +6,7 @@
 /*   By: nbardavi <nbabardavid@gmail.com>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/06 13:51:42 by nbardavi          #+#    #+#             */
-/*   Updated: 2024/03/11 01:08:03 by nbardavi         ###   ########.fr       */
+/*   Updated: 2024/03/11 07:33:22 by nbardavi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,6 +27,14 @@
 # define SIZE_MAX (18446744073709551615UL)
 # define EXIT_DEAD 10
 
+typedef struct s_philo
+{
+	int		id;
+	int		time_last_eat;
+	int		nbr_eat;
+	struct s_rules	*rules;
+}			t_philo;
+
 typedef struct s_rules
 {
 	int		nbr;
@@ -37,20 +45,14 @@ typedef struct s_rules
 	int		nbr_eat;
 	int		time_start;
 	int		died;
-	int		*id;
+	int		id[250];
+	int		trigger;
 	sem_t	*dead_lock;
 	sem_t	*print_lock;
 	sem_t	*forks;
-	struct s_philo *philo;
+	t_philo philo[250];
 }			t_rules;
 
-typedef struct s_philo
-{
-	int		id;
-	int		time_last_eat;
-	int		nbr_eat;
-	t_rules	*rules;
-}			t_philo;
 
 /*_.-=-._.-=-._.-=-._.-=-._.-=-._.-=-._.-=-._.-=-._.-=-._.-=-._.-=-._*/
 /*_.-=-._.-=-._.-=-._.-=-._.- UTILS -._.-=-._.-=-._.-=-._.-=-._.-=-._*/

@@ -6,7 +6,7 @@
 /*   By: nbardavi <nbabardavid@gmail.com>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/07 10:19:19 by nbardavi          #+#    #+#             */
-/*   Updated: 2024/03/11 05:27:55 by nbardavi         ###   ########.fr       */
+/*   Updated: 2024/03/11 13:09:48 by nbardavi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,9 +42,10 @@ void init_sem(t_rules *rules)
 	sem_unlink("/forks");
 	sem_unlink("/lock");
 	sem_unlink("/print");
-	rules->forks = sem_open("/forks", O_CREAT, 0644, rules->nbr);
-	rules->dead_lock = sem_open("/lock", O_CREAT, 0644, 1);
-	rules->print_lock = sem_open("/print", O_CREAT, 0644, 1);
+	(void)rules;
+	// rules->forks = sem_open("/forks", O_CREAT, 0644, rules->nbr);
+	// rules->dead_lock = sem_open("/lock", O_CREAT, 0644, 1);
+	// rules->print_lock = sem_open("/print", O_CREAT, 0644, 1);
 }
 
 int	check_dead(t_philo *philo)
@@ -64,22 +65,36 @@ void suicide(t_philo *philo, int t)
 	if (t == 1)
 	{
 		sem_wait(philo->rules->dead_lock);
+		sem_wait(philo->rules->print_lock);
 		printf("[💀] %d %d died\n", get_time() - philo->rules->time_start, philo->id);
+		sem_post(philo->rules->print_lock);
 	}
 	else if (t == 2)
+	{
+		sem_close(philo->rules->forks);
+		sem_close(philo->rules->dead_lock);
+		sem_close(philo->rules->print_lock);
 		exit (EXIT_SUCCESS);
+	}
+	sem_close(philo->rules->forks);
+	sem_close(philo->rules->dead_lock);
+	sem_close(philo->rules->print_lock);
 	exit(EXIT_DEAD);
 }
 
 void	sleeping(t_philo *philo)
 {
+	sem_wait(philo->rules->print_lock);
 	printf("[💤] %d %d is sleeping\n", get_time() - philo->rules->time_start, philo->id);
+	sem_post(philo->rules->print_lock);
 	ft_sleep(philo->rules->tt_sleep, philo);
 }
 
 void	thinking(t_philo *philo)
 {
+	sem_wait(philo->rules->print_lock);
 	printf("[💭] %d %d is thinking\n", get_time() - philo->rules->time_start, philo->id);
+	sem_post(philo->rules->print_lock);
 	ft_sleep(philo->rules->tt_think, philo);
 }
 
@@ -100,81 +115,78 @@ void routine(t_philo *philo)
 	}
 }
 
-void kill_them_all(t_philo *philo, int skip_id)
+void kill_them_all(t_rules *rules)
 {
-	(void)philo;
 	int	i;
 
 	i = 0;
-	while(i < philo->rules->nbr)
+	while(i < rules->nbr)
 	{
-		if (philo->rules->id[i] != skip_id)
-			kill(philo->rules->id[i], SIGKILL);
+		kill(rules->id[i], SIGKILL);
 		i++;
 	}
 }
 
-void *bigbrother(void *philo_ptr)
+void *bigbrother(void *rules_ptr)
 {
-	t_philo	*philo;
+	t_rules	*rules;
 	int id;
 
-	philo = philo_ptr;
-	waitpid(philo->rules->id[philo->id], &id, 0);
+	rules = rules_ptr;
+	waitpid(-1, &id, 0);
 	id = WEXITSTATUS(id);
 	if (id == EXIT_DEAD)
 	{
-		printf("[💀] %d %d died\n", get_time() - philo->rules->time_start, philo->id);
-		kill_them_all(philo, philo->rules->id[philo->id]);
+		rules->trigger = 1;
+		kill_them_all(rules);
 	}
+	else
+		rules->trigger = 0;
 	return (NULL);
 }
 
 void life(t_rules *rules)
 {
 	int	i;
-	pthread_t	*threads;
+	pthread_t	threads;
 
-	threads = ft_calloc(rules->nbr, sizeof(pthread_t));
+	rules->forks = sem_open("/forks", O_CREAT, 0644, rules->nbr);
+	rules->dead_lock = sem_open("/dead_lock", O_CREAT, 0644, 1);
+	rules->print_lock = sem_open("/print", O_CREAT, 0644, 1);
 	i = 0;
-	rules->time_start = get_time();
 	while(i < rules->nbr)
 	{
+		rules->time_start = get_time();
 		rules->philo[i].id = i;
 		rules->philo[i].time_last_eat = get_time();
+		rules->philo[i].nbr_eat = 0;
 		rules->id[i] = fork();
 		if (rules->id[i] == 0)
 		{
 			routine(&rules->philo[i]);
 			exit(EXIT_SUCCESS);
 		}
-		if (pthread_create(&threads[i], NULL, bigbrother, (void *)&rules->philo[i]) != 0)
-		{
-			printf("thread failed\n");
-			exit (EXIT_FAILURE);
-			// exit_thread(rules);
-		}
 		i++;
-		usleep(10);
+		usleep(250 * rules->nbr);
+	}
+	if (pthread_create(&threads, NULL, bigbrother, (void *)&rules) == -1)
+	{
+		printf("thread failed\n");
+		exit (EXIT_FAILURE);
+		// exit_thread(rules);
 	}
 	i = 0;
-	while(i < rules->nbr)
-		pthread_join(threads[i++], NULL);
-	printf("[🍔] All the philosophers are satisfied\n");
-	free(threads);
+	pthread_join(threads, NULL);
 }
 
 void clean(t_rules *rules)
 {
-	printf("fdp\n");
 	sem_close(rules->forks);
-	sem_close(rules->dead_lock);
-	sem_close(rules->print_lock);
 	sem_unlink("/forks");
-	sem_unlink("/lock");
+	sem_close(rules->dead_lock);
+	sem_unlink("/dead_lock");
+	sem_close(rules->print_lock);
 	sem_unlink("/print");
-	free(rules->philo);
-	free(rules->id);
 }
 
 int	main(int argc, char **argv)

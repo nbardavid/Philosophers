@@ -6,7 +6,7 @@
 /*   By: nbardavi <nbabardavid@gmail.com>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/06 11:48:17 by nbardavi          #+#    #+#             */
-/*   Updated: 2024/03/11 04:57:16 by nbardavi         ###   ########.fr       */
+/*   Updated: 2024/03/11 06:17:52 by nbardavi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -91,23 +91,23 @@ void set_philo(t_rules *rules)
 	int i;
 	
 	i = 0;
-	rules->philo = ft_calloc(rules->nbr, sizeof(t_philo));
+	// rules->philo = ft_calloc(rules->nbr, sizeof(t_philo));
 	while(i < rules->nbr)
 		rules->philo[i++].rules = rules;
 }
 
-void	set_malloc_rules(t_rules *rules)
-{
-	rules->id = ft_calloc(rules->nbr, sizeof(int));
-	if (rules->id == NULL)
-		exit(EXIT_FAILURE);
-}
+// void	set_malloc_rules(t_rules *rules)
+// {
+// 	rules->id = ft_calloc(rules->nbr, sizeof(int));
+// 	if (rules->id == NULL)
+// 		exit(EXIT_FAILURE);
+// }
 
 void	set_rules(t_rules *rules, int argc, char **argv)
 {
 	check_argc(argc);
 	check_args(rules, argc, argv);
-	set_malloc_rules(rules);
+	// set_malloc_rules(rules);
 	set_philo(rules);
 	init_sem(rules);
 }
