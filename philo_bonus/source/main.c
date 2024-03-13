@@ -6,7 +6,7 @@
 /*   By: nbardavi <nbabardavid@gmail.com>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/07 10:19:19 by nbardavi          #+#    #+#             */
-/*   Updated: 2024/03/13 15:17:24 by nbardavi         ###   ########.fr       */
+/*   Updated: 2024/03/13 16:16:42 by nbardavi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -66,7 +66,6 @@ void suicide(t_philo *philo, int t)
 	{
 		sem_wait(philo->rules->dead_lock);
 		sem_wait(philo->rules->print_lock);
-		printf("[💀] %d %d died\n", get_time() - philo->rules->time_start, philo->id);
 		sem_post(philo->rules->print_lock);
 	}
 	else if (t == 2)
