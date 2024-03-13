@@ -6,7 +6,7 @@
 /*   By: nbardavi <nbabardavid@gmail.com>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/06 13:51:42 by nbardavi          #+#    #+#             */
-/*   Updated: 2024/03/11 07:33:22 by nbardavi         ###   ########.fr       */
+/*   Updated: 2024/03/13 15:15:25 by nbardavi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,12 +45,12 @@ typedef struct s_rules
 	int		nbr_eat;
 	int		time_start;
 	int		died;
-	int		id[250];
+	int		*id;
 	int		trigger;
 	sem_t	*dead_lock;
 	sem_t	*print_lock;
 	sem_t	*forks;
-	t_philo philo[250];
+	t_philo *philo;
 }			t_rules;
 
 

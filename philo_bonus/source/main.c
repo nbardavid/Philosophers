@@ -6,7 +6,7 @@
 /*   By: nbardavi <nbabardavid@gmail.com>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/07 10:19:19 by nbardavi          #+#    #+#             */
-/*   Updated: 2024/03/11 13:09:48 by nbardavi         ###   ########.fr       */
+/*   Updated: 2024/03/13 15:17:24 by nbardavi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -132,7 +132,7 @@ void *bigbrother(void *rules_ptr)
 	t_rules	*rules;
 	int id;
 
-	rules = rules_ptr;
+	rules = (t_rules *)rules_ptr;
 	waitpid(-1, &id, 0);
 	id = WEXITSTATUS(id);
 	if (id == EXIT_DEAD)
@@ -169,7 +169,7 @@ void life(t_rules *rules)
 		i++;
 		usleep(250 * rules->nbr);
 	}
-	if (pthread_create(&threads, NULL, bigbrother, (void *)&rules) == -1)
+	if (pthread_create(&threads, NULL, bigbrother, rules) == -1)
 	{
 		printf("thread failed\n");
 		exit (EXIT_FAILURE);
