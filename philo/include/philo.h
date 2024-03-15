@@ -6,7 +6,7 @@
 /*   By: nbardavi <nbabardavid@gmail.com>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/06 13:51:42 by nbardavi          #+#    #+#             */
-/*   Updated: 2024/03/06 14:24:27 by nbardavi         ###   ########.fr       */
+/*   Updated: 2024/03/11 08:46:06 by nbardavi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -60,6 +60,7 @@ void	ft_sleep(int ms, t_philo *philo);
 int		get_time(void);
 void	free_rules(t_rules *rules);
 int		check_dead(t_philo *philo, int *trigger);
+int		check_dead_fork(t_philo *philo);
 
 /*_.-=-._.-=-._.-=-._.-=-._.-=-._.-=-._.-=-._.-=-._.-=-._.-=-._.-=-._*/
 /*_.-=-._.-=-._.-=-._.-=-._.- INIT -._.-=-._.-=-._.-=-._.-=-._.-=-._*/

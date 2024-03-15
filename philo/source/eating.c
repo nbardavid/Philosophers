@@ -6,7 +6,7 @@
 /*   By: nbardavi <nbabardavid@gmail.com>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/06 12:03:46 by nbardavi          #+#    #+#             */
-/*   Updated: 2024/03/06 14:39:41 by nbardavi         ###   ########.fr       */
+/*   Updated: 2024/03/11 09:59:37 by nbardavi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,10 +51,13 @@ int	get_right_fork(t_philo *philo)
 	pthread_mutex_lock(&philo->rules->print_lock);
 	if (check_dead_fork(philo) == 0)
 	{
-		printf("[🍴] %d %d has taken a fork \n", get_time()
-			- philo->rules->time_start, philo->id);
-		printf("[🍔] %d %d is eating\n", get_time() - philo->rules->time_start,
-			philo->id);
+		if (philo->nbr_eat < philo->rules->nbr_eat)
+		{
+			printf("[🍴] %d %d has taken a fork \n", get_time()
+				- philo->rules->time_start, philo->id);
+			printf("[🍔] %d %d is eating\n", get_time() - philo->rules->time_start,
+				philo->id);
+		}
 	}
 	else
 		pthread_mutex_unlock(&philo->rules->died_lock);

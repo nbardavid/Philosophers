@@ -6,7 +6,7 @@
 /*   By: nbardavi <nbabardavid@gmail.com>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/06 12:11:33 by nbardavi          #+#    #+#             */
-/*   Updated: 2024/03/06 12:25:19 by nbardavi         ###   ########.fr       */
+/*   Updated: 2024/03/11 09:54:16 by nbardavi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,8 +15,11 @@
 void	thinking(t_philo *philo)
 {
 	pthread_mutex_lock(&philo->rules->print_lock);
-	printf("[💭] %d %d is thinking\n", get_time() - philo->rules->time_start,
-		philo->id);
+	if (check_dead_fork(philo) == 0)
+		printf("[💭] %d %d is thinking\n", get_time() - philo->rules->time_start,
+			philo->id);
+	else
+		pthread_mutex_unlock(&philo->rules->died_lock);
 	pthread_mutex_unlock(&philo->rules->print_lock);
 	ft_sleep(philo->rules->tt_think, philo);
 }
@@ -24,8 +27,11 @@ void	thinking(t_philo *philo)
 void	sleeping(t_philo *philo)
 {
 	pthread_mutex_lock(&philo->rules->print_lock);
-	printf("[💤] %d %d is sleeping\n", get_time() - philo->rules->time_start,
-		philo->id);
+	if (check_dead_fork(philo) == 0)
+		printf("[💤] %d %d is sleeping\n", get_time() - philo->rules->time_start,
+			philo->id);
+	else
+		pthread_mutex_unlock(&philo->rules->died_lock);
 	pthread_mutex_unlock(&philo->rules->print_lock);
 	ft_sleep(philo->rules->tt_sleep, philo);
 }
@@ -57,8 +63,7 @@ void	*routine(void *philo_ptr)
 		sleeping(philo);
 		if (check_dead(philo, &trigger) == 1)
 			break ;
-		if (philo->rules->tt_think > 0)
-			thinking(philo);
+		thinking(philo);
 		if (check_dead(philo, &trigger) == 1)
 			break ;
 	}

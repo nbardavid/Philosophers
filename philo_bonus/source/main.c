@@ -6,7 +6,7 @@
 /*   By: nbardavi <nbabardavid@gmail.com>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/07 10:19:19 by nbardavi          #+#    #+#             */
-/*   Updated: 2024/03/13 16:16:42 by nbardavi         ###   ########.fr       */
+/*   Updated: 2024/03/14 16:32:35 by nbardavi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,6 +42,7 @@ void init_sem(t_rules *rules)
 	sem_unlink("/forks");
 	sem_unlink("/lock");
 	sem_unlink("/print");
+	sem_unlink("/fork_lock");
 	(void)rules;
 	// rules->forks = sem_open("/forks", O_CREAT, 0644, rules->nbr);
 	// rules->dead_lock = sem_open("/lock", O_CREAT, 0644, 1);
@@ -73,11 +74,14 @@ void suicide(t_philo *philo, int t)
 		sem_close(philo->rules->forks);
 		sem_close(philo->rules->dead_lock);
 		sem_close(philo->rules->print_lock);
+		sem_close(philo->rules->fork_lock);
 		exit (EXIT_SUCCESS);
 	}
 	sem_close(philo->rules->forks);
 	sem_close(philo->rules->dead_lock);
 	sem_close(philo->rules->print_lock);
+	sem_close(philo->rules->fork_lock);
+	printf("[💀] %d 1 died\n", get_time() - philo->rules->time_start);
 	exit(EXIT_DEAD);
 }
 
@@ -121,37 +125,44 @@ void kill_them_all(t_rules *rules)
 	i = 0;
 	while(i < rules->nbr)
 	{
+		sem_wait(rules->fork_lock);
 		kill(rules->id[i], SIGKILL);
+		sem_post(rules->fork_lock);
 		i++;
 	}
 }
 
-void *bigbrother(void *rules_ptr)
+void *bigbrother(void *philo_ptr)
 {
-	t_rules	*rules;
+	t_philo	*philo;
 	int id;
+	int temp;
 
-	rules = (t_rules *)rules_ptr;
-	waitpid(-1, &id, 0);
+	philo = (t_philo *)philo_ptr;
+	sem_wait(philo->rules->fork_lock);
+	temp = philo->rules->id[philo->id];
+	sem_post(philo->rules->fork_lock);
+	waitpid(temp, &id, 0);
 	id = WEXITSTATUS(id);
 	if (id == EXIT_DEAD)
-	{
-		rules->trigger = 1;
-		kill_them_all(rules);
-	}
-	else
-		rules->trigger = 0;
+		kill_them_all(philo->rules);
 	return (NULL);
 }
 
 void life(t_rules *rules)
 {
 	int	i;
-	pthread_t	threads;
+	pthread_t	*threads;
 
 	rules->forks = sem_open("/forks", O_CREAT, 0644, rules->nbr);
 	rules->dead_lock = sem_open("/dead_lock", O_CREAT, 0644, 1);
 	rules->print_lock = sem_open("/print", O_CREAT, 0644, 1);
+	rules->fork_lock = sem_open("/fork_lock", O_CREAT, 0644, 1);
+	sem_unlink("/forks");
+	sem_unlink("/dead_lock");
+	sem_unlink("/print");
+	sem_unlink("/fork_lock");
+	threads = ft_calloc(rules->nbr, sizeof(pthread_t));
 	i = 0;
 	while(i < rules->nbr)
 	{
@@ -159,33 +170,51 @@ void life(t_rules *rules)
 		rules->philo[i].id = i;
 		rules->philo[i].time_last_eat = get_time();
 		rules->philo[i].nbr_eat = 0;
+		if (pthread_create(&threads[i], NULL, bigbrother, &rules->philo[i]) == -1)
+		{
+			printf("thread failed\n");
+			exit (EXIT_FAILURE);
+			// exit_thread(rules);
+		}
+		sem_wait(rules->fork_lock);
 		rules->id[i] = fork();
 		if (rules->id[i] == 0)
 		{
 			routine(&rules->philo[i]);
 			exit(EXIT_SUCCESS);
 		}
+		sem_post(rules->fork_lock);
 		i++;
-		usleep(250 * rules->nbr);
-	}
-	if (pthread_create(&threads, NULL, bigbrother, rules) == -1)
-	{
-		printf("thread failed\n");
-		exit (EXIT_FAILURE);
-		// exit_thread(rules);
+		usleep(50);
 	}
 	i = 0;
-	pthread_join(threads, NULL);
+	while(i < rules->nbr)
+		pthread_join(threads[i++], NULL);
+}
+
+void solo_life(t_rules *rules)
+{
+	int id;
+
+	rules->time_start = get_time();
+	id = fork();
+	if (id == 0)
+	{
+		printf("[🍴] %d 1 has taken a fork \n", get_time() - rules->time_start);
+		usleep(rules->tt_die * 1000);
+		printf("[💀] %d 1 died\n", get_time() - rules->time_start);
+	}
+	else
+		waitpid(-1, NULL, 0);
+
 }
 
 void clean(t_rules *rules)
 {
+	sem_close(rules->fork_lock);
 	sem_close(rules->forks);
-	sem_unlink("/forks");
 	sem_close(rules->dead_lock);
-	sem_unlink("/dead_lock");
 	sem_close(rules->print_lock);
-	sem_unlink("/print");
 }
 
 int	main(int argc, char **argv)
@@ -194,7 +223,10 @@ int	main(int argc, char **argv)
 
 	set_rules(&rules, argc, argv);
 	init_sem(&rules);
-	life(&rules);
+	if (rules.nbr > 1)
+		life(&rules);
+	else if (rules.nbr == 1)
+		solo_life(&rules);
 	clean(&rules);
 	return (0);
 }

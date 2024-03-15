@@ -6,7 +6,7 @@
 /*   By: nbardavi <nbabardavid@gmail.com>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/06 13:51:42 by nbardavi          #+#    #+#             */
-/*   Updated: 2024/03/13 15:15:25 by nbardavi         ###   ########.fr       */
+/*   Updated: 2024/03/14 15:18:47 by nbardavi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,6 +50,7 @@ typedef struct s_rules
 	sem_t	*dead_lock;
 	sem_t	*print_lock;
 	sem_t	*forks;
+	sem_t	*fork_lock;
 	t_philo *philo;
 }			t_rules;
 

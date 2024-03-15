@@ -6,7 +6,7 @@
 /*   By: nbardavi <nbabardavid@gmail.com>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/06 12:27:40 by nbardavi          #+#    #+#             */
-/*   Updated: 2024/03/07 09:34:44 by nbardavi         ###   ########.fr       */
+/*   Updated: 2024/03/11 09:21:39 by nbardavi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,8 +39,10 @@ int	eat_all_print(t_rules *rules)
 	pthread_mutex_lock(&rules->died_lock);
 	rules->died = 1;
 	pthread_mutex_unlock(&rules->died_lock);
+	pthread_mutex_lock(&rules->print_lock);
 	printf("[🍔] %d All the philosophers are satisfied\n", get_time()
 		- rules->time_start);
+	pthread_mutex_unlock(&rules->print_lock);
 	return (0);
 }
 

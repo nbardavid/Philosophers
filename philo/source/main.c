@@ -6,7 +6,7 @@
 /*   By: nbardavi <nbabardavid@gmail.com>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/05 09:25:57 by nbardavi          #+#    #+#             */
-/*   Updated: 2024/03/08 21:00:48 by nbardavi         ###   ########.fr       */
+/*   Updated: 2024/03/14 15:10:52 by nbardavi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,7 +42,6 @@ void	life(t_rules rules)
 	rules.time_start = get_time();
 	while (i < rules.nbr)
 	{
-		usleep(10);
 		rules.philo[i].id = i;
 		rules.philo[i].rules = &rules;
 		rules.philo[i].time_last_eat = get_time();
@@ -50,9 +49,12 @@ void	life(t_rules rules)
 				(void *)&rules.philo[i]) != 0)
 			exit_thread(rules);
 		i++;
+		usleep(100);
 	}
 	if (pthread_create(&threads[i], NULL, checker, (void *)&rules))
+	{
 		exit_thread(rules);
+	}
 	i = 0;
 	while (i < rules.nbr + 1)
 	{
